@@ -1,12 +1,12 @@
 using System;
 using System.Linq;
 using System.Net;
-using Cloud5mins.AzUrlShortenerLib;
+using Cloud5mins.AzUrlShortener;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 
-namespace Cloud5mins.AdminApi
+namespace Cloud5mins.Function
 {
     public class HttpTrigger
     {

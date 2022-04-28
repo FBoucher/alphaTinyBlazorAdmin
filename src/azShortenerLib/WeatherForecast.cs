@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Cloud5mins.AzUrlShortenerLib
+namespace Cloud5mins.AzUrlShortener
 {
     public class WeatherForecast
     {
