@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+//using Microsoft.AspNetCore.Components;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Net.Http;
@@ -10,7 +10,7 @@ using System;
 using Cloud5mins.AzShortener;
 
 
-namespace TinyBlazorAdmin.Data
+namespace Cloud5mins.TinyBlazorAdmin.Data
 {
     /// <summary>
     /// Client to fetch the Cosmos DB token.
@@ -82,20 +82,20 @@ namespace TinyBlazorAdmin.Data
             return JsonSerializer.Deserialize<ShortUrlEntity>(resultList);
         }
 
-        public async Task<ClickDateList> GetClickStats(string vanity) {
-            try{
-            CancellationToken cancellationToken = new CancellationToken();
+        // public async Task<ClickDateList> GetClickStats(string vanity) {
+        //     try{
+        //     CancellationToken cancellationToken = new CancellationToken();
 
-            string result = string.Empty;
-            var response = await _client.PostAsJsonAsync($"/api/UrlClickStatsByDay", new { Vanity = vanity }, cancellationToken);
-            var resultList = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<ClickDateList>(resultList);;
+        //     string result = string.Empty;
+        //     var response = await _client.PostAsJsonAsync($"/api/UrlClickStatsByDay", new { Vanity = vanity }, cancellationToken);
+        //     var resultList = await response.Content.ReadAsStringAsync();
+        //     return JsonSerializer.Deserialize<ClickDateList>(resultList);;
 
-            }
-            catch(Exception ex){
-                var ttt = ex.Message;
-                return new ClickDateList();
-            }    
-        }
+        //     }
+        //     catch(Exception ex){
+        //         var ttt = ex.Message;
+        //         return new ClickDateList();
+        //     }    
+        // }
     }
 }
