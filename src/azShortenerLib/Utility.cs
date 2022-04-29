@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Security.Claims;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Mvc;
+//using Microsoft.AspNetCore.Mvc;
 
 
 namespace Cloud5mins.AzShortener
@@ -63,36 +63,36 @@ namespace Cloud5mins.AzShortener
             }
         }
 
-        public static IActionResult CatchUnauthorize(ClaimsPrincipal principal, ILogger log)
-        {
-            if (principal == null)
-            {
-                log.LogWarning("No principal.");
-                return new UnauthorizedResult();
-            }
+        // public static IActionResult CatchUnauthorize(ClaimsPrincipal principal, ILogger log)
+        // {
+        //     if (principal == null)
+        //     {
+        //         log.LogWarning("No principal.");
+        //         return new UnauthorizedResult();
+        //     }
 
-            if (principal.Identity == null)
-            {
-                log.LogWarning("No identity.");
-                return new UnauthorizedResult();
-            }
+        //     if (principal.Identity == null)
+        //     {
+        //         log.LogWarning("No identity.");
+        //         return new UnauthorizedResult();
+        //     }
 
-            if (!principal.Identity.IsAuthenticated)
-            {
-                log.LogWarning("Request was not authenticated.");
-                return new UnauthorizedResult();
-            }
+        //     if (!principal.Identity.IsAuthenticated)
+        //     {
+        //         log.LogWarning("Request was not authenticated.");
+        //         return new UnauthorizedResult();
+        //     }
 
-            if (principal.FindFirst(ClaimTypes.GivenName) is null)
-            {
-                log.LogError("Claim not Found");
-                return new BadRequestObjectResult(new
-                {
-                    message = "Claim not Found",
-                    StatusCode = System.Net.HttpStatusCode.BadRequest
-                });
-            }
-            return null;
-        }
+        //     if (principal.FindFirst(ClaimTypes.GivenName) is null)
+        //     {
+        //         log.LogError("Claim not Found");
+        //         return new BadRequestObjectResult(new
+        //         {
+        //             message = "Claim not Found",
+        //             StatusCode = System.Net.HttpStatusCode.BadRequest
+        //         });
+        //     }
+        //     return null;
+        // }
     }
 }

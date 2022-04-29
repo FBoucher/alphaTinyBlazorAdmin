@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using System.Net;
-using Cloud5mins.AzUrlShortener;
+using Cloud5mins.AzShortener;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
