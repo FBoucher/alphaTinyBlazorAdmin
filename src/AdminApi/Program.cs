@@ -11,7 +11,7 @@ namespace Cloud5mins.AdminApi
     {
         public static void Main()
         {
-            AdminApiSettings shortenerSettings = null;
+            AdminApiSettings AdminApiSettings = null;
             
             var host = new HostBuilder()
                 .ConfigureFunctionsWorkerDefaults()
@@ -21,13 +21,13 @@ namespace Cloud5mins.AdminApi
                     services.AddSingleton(options =>
                     {
                         var configuration = context.Configuration;
-                        shortenerSettings = new AdminApiSettings();
-                        configuration.Bind(shortenerSettings);
+                        AdminApiSettings = new AdminApiSettings();
+                        configuration.Bind(AdminApiSettings);
                         return configuration;
                     });
             
                     // Add our configuration class
-                    services.AddSingleton(options => { return shortenerSettings; });
+                    services.AddSingleton(options => { return AdminApiSettings; });
                 })
                 .Build();
 

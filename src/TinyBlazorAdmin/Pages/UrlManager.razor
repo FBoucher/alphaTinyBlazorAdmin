@@ -1,0 +1,54 @@
+@page "/urlmanager"
+
+@using Cloud5mins.AzShortener
+@inject HttpClient Http
+
+<PageTitle>Url Manager</PageTitle>
+
+<h1>Url Manager</h1>
+
+
+@if (urls.UrlList == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Vanity</th>
+                <th>Title</th>
+                <th>Clicks</th>
+                <th>Is Archived</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var url in urls.UrlList)
+            {
+                <tr>
+                    <td>@url.RowKey</td>
+                    <td>@url.Title</td>
+                    <td>@url.Clicks</td>
+                    <td>@url.IsArchived</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private ListResponse urls = new ListResponse();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            urls = await Http.GetFromJsonAsync<ListResponse>("/api/UrlList") ?? new ListResponse();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+        }
+    }
+}
