@@ -1,5 +1,7 @@
 @page "/urlmanager"
 
+@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Grids
 @using Cloud5mins.AzShortener
 @inject HttpClient Http
 
@@ -7,34 +9,75 @@
 
 <h1>Url Manager</h1>
 
-
 @if (urls.UrlList == null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Vanity</th>
-                <th>Title</th>
-                <th>Clicks</th>
-                <th>Is Archived</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var url in urls.UrlList)
-            {
-                <tr>
-                    <td>@url.RowKey</td>
-                    <td>@url.Title</td>
-                    <td>@url.Clicks</td>
-                    <td>@url.IsArchived</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+
+    <SfGrid DataSource="@urls.UrlList" id="grdUrls" AllowPaging="true" AllowSorting="true" AllowFiltering="true" >
+        <GridPageSettings PageSize="15"></GridPageSettings>
+        <GridColumns>
+                @* <GridColumn Width="80">
+                    <Template>
+                        @{
+                            var url = (context as ShortUrlEntity);
+                            <button type="button" class="btn btn-outline-primary btn-sm" @onclick="@(() => CopyToClipboardAsync(url.ShortUrl))">Copy</button>
+                        }
+                    </Template>
+                </GridColumn>
+                <GridColumn HeaderText="Schedule(s)">
+                    <Template>
+                        @{
+                            var url = (context as ShortUrlEntity);
+                            if(url.Schedules != null){
+                                <span>@url.Schedules.Count</span>
+                            }
+                            else
+                            {
+                                <span>0</span>
+                            };
+                        }
+                    </Template>
+                </GridColumn> *@
+                <GridColumn Field=@nameof(ShortUrlEntity.RowKey) HeaderText="Vanity">
+                    <Template>
+                        @{
+                            var url = (context as ShortUrlEntity);
+                            <a href="https://@url.ShortUrl" target="blank">@url.RowKey</a>
+                        }
+                    </Template>
+                </GridColumn>
+                <GridColumn Field=@nameof(ShortUrlEntity.Title) HeaderText="Title" ></GridColumn>
+                <GridColumn Field=@nameof(ShortUrlEntity.Url) HeaderText="Url" ></GridColumn>
+                <GridColumn Field=@nameof(ShortUrlEntity.Clicks) HeaderText="Clicks" >
+                    <Template>
+                        @{
+                            var url = (context as ShortUrlEntity);
+                            <span>@url.Clicks</span>   
+                            @* <button type="button" class="btn btn-outline-primary btn-sm" @onclick="@(() => NavigateToStats(url.RowKey))">📊</button> *@
+                        }
+                    </Template>
+                </GridColumn>
+                @* <GridColumn Width="70">
+                    <Template>
+                        @{
+                            var url = (context as ShortUrlEntity);
+                            <button type="button" class="btn btn-outline-primary btn-sm" @onclick="@(() => EditShortUrl(url))">Edit</button>
+                        }
+                    </Template>
+                </GridColumn> *@
+                @* <GridColumn Width="70">
+                    <Template>
+                        @{
+                            var url = (context as ShortUrlEntity);
+                            <button type="button" class="btn btn-outline-primary btn-sm" @onclick="@(() => ArchiveShortUrl(url))">Archive</button>
+                        }
+                    </Template>
+                </GridColumn> *@
+            </GridColumns>
+    </SfGrid>
 }
 
 @code {
