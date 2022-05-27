@@ -1,5 +1,6 @@
 @page "/urlmanager"
 
+@using Microsoft.AspNetCore.Authorization
 @using Syncfusion.Blazor
 @using Syncfusion.Blazor.Grids
 @using Cloud5mins.AzShortener
@@ -15,6 +16,11 @@
 }
 else
 {
+
+    <button class="btn btn-primary"
+            @onclick="CreateShortUrl">
+        Add New Url
+    </button>
 
     <SfGrid DataSource="@urls.UrlList" id="grdUrls" AllowPaging="true" AllowSorting="true" AllowFiltering="true" >
         <GridPageSettings PageSize="15"></GridPageSettings>
@@ -80,8 +86,66 @@ else
     </SfGrid>
 }
 
+
+@if (ShowCreatePopup)
+{
+    <div class="modal fade show" id="createPopup" style="display:block" aria-modal="true" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Short Url Request</h4>
+                    <button type="button" class="close" @onclick="@ClosePopup">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                        <EditForm Model="shortUrlRequest" OnValidSubmit="SaveShortUrl">
+                            <DataAnnotationsValidator />                        
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-lg-12 col-md-12">
+                                    <SfTextBox id="title" Placeholder="Title" FloatLabelType="@FloatLabelType.Auto" @bind-Value="shortUrlRequest.Title"></SfTextBox>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-lg-12 col-md-12">
+                                    <SfTextBox id="url" Placeholder="Url" FloatLabelType="@FloatLabelType.Auto" @bind-Value="shortUrlRequest.Url"></SfTextBox>
+                                    <ValidationMessage For="@(() => shortUrlRequest.Url)" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-lg-12 col-md-12">
+                                    <SfTextBox id="vanity" Placeholder="Vanity" FloatLabelType="@FloatLabelType.Auto" @bind-Value="shortUrlRequest.Vanity"></SfTextBox>
+                                </div>
+                            </div>
+
+                            <div>
+                                <SchedulesComponent schedules="shortUrlRequest.Schedules"></SchedulesComponent>
+                            </div>
+                        </EditForm>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn" @onclick="@ClosePopup">Cancel</button>
+                    <button type="button" class="btn btn-primary" @onclick=@SaveShortUrl>Save</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+}
+
+
+
 @code {
+    bool ShowCreatePopup = false;
     private ListResponse urls = new ListResponse();
+    ShortUrlRequest shortUrlRequest = new ShortUrlRequest();
+    SfGrid<ShortUrlEntity> grdUrls;
+    public List<ShortUrlEntity> gridData { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -93,5 +157,35 @@ else
         {
             Console.WriteLine(ex.ToString());
         }
+    }
+
+    private async Task SaveShortUrl()
+    {
+        ShowCreatePopup = false;
+
+        @* try
+        {
+            await Http.GetFromJsonAsync<ListResponse>("/api/CreateShortUrl") ;
+            await UpdateUIList();
+        }
+        catch (System.Exception)
+        {
+            Console.WriteLine(ex.ToString());
+        }
+        grdUrls.ClearFiltering();
+        grdUrls.FilterByColumn("RowKey", "equal", shortUrlRequest.Vanity); *@
+    }
+
+    void ClosePopup()
+    {
+        ShowCreatePopup = false;
+        //ShowEditPopup = false;
+    }
+
+    [Authorize(Roles = "admin")]
+    void CreateShortUrl()
+    {
+        shortUrlRequest = new ShortUrlRequest();
+        ShowCreatePopup = true;
     }
 }
