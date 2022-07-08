@@ -7,7 +7,7 @@ namespace Cloud5mins.AzShortener
     {
         private string _vanity;
 
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         public string Vanity
         {
