@@ -164,7 +164,7 @@ else
     {
         ShowCreatePopup = false;
 
-        @* try
+        try
         {
             await Http.GetFromJsonAsync<ListResponse>("/api/CreateShortUrl") ;
             await UpdateUIList();
@@ -174,7 +174,7 @@ else
             Console.WriteLine(ex.ToString());
         }
         grdUrls.ClearFiltering();
-        grdUrls.FilterByColumn("RowKey", "equal", shortUrlRequest.Vanity); *@
+        grdUrls.FilterByColumn("RowKey", "equal", shortUrlRequest.Vanity);
     }
 
     void ClosePopup()
