@@ -82,12 +82,12 @@ namespace Cloud5mins.Function
             {
                 _logger.LogError(ex, "An unexpected error was encountered.");
                 var badres = req.CreateResponse(HttpStatusCode.BadRequest);
-                badres.WriteAsJsonAsync(new {Message = ex.Message });
+                await badres.WriteAsJsonAsync(new {Message = ex.Message });
                 return badres;
             }
 
             var response = req.CreateResponse(HttpStatusCode.OK);
-            response.WriteAsJsonAsync(result);
+            await response.WriteAsJsonAsync(result);
 
             return response;
         }

@@ -26,10 +26,10 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using System.Net;
-using Microsoft.Extensions.Configuration;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
+// using Microsoft.Extensions.Configuration;
+// using System.Security.Claims;
+// using Microsoft.AspNetCore.Mvc;
+// using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Text.Json;
 using System.Threading;
@@ -96,28 +96,19 @@ namespace Cloud5mins.Function
                 if (string.IsNullOrWhiteSpace(input.Url))
                 {
                     var badResponse = req.CreateResponse(HttpStatusCode.BadRequest);
-                    badResponse.WriteAsJsonAsync(new {Message = "The url parameter can not be empty."});
+                    await badResponse.WriteAsJsonAsync(new {Message = "The url parameter can not be empty."});
                     return badResponse;
                 }
 
                 // Validates if input.url is a valid aboslute url, aka is a complete refrence to the resource, ex: http(s)://google.com
                 if (!Uri.IsWellFormedUriString(input.Url, UriKind.Absolute))
                 {
-                    return new BadRequestObjectResult(new
-                    {
-                        StatusCode = HttpStatusCode.BadRequest,
-                        Message = $"{input.Url} is not a valid absolute Url. The Url parameter must start with 'http://' or 'http://'."
-                    });
+                    var badResponse = req.CreateResponse(HttpStatusCode.BadRequest);
+                    await badResponse.WriteAsJsonAsync(new {Message = $"{input.Url} is not a valid absolute Url. The Url parameter must start with 'http://' or 'http://'."});
+                    return badResponse;
                 }
 
-                var config = new ConfigurationBuilder()
-                    .SetBasePath(context.FunctionAppDirectory)
-                    .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                    .AddEnvironmentVariables()
-                    .Build();
-
-                StorageTableHelper stgHelper = new StorageTableHelper(config["UlsDataStorage"]);
-
+                StorageTableHelper stgHelper = new StorageTableHelper(_adminApiSettings.UlsDataStorage);
 
                 string longUrl = input.Url.Trim();
                 string vanity = string.IsNullOrWhiteSpace(input.Vanity) ? "" : input.Vanity.Trim();
@@ -131,7 +122,9 @@ namespace Cloud5mins.Function
                     newRow = new ShortUrlEntity(longUrl, vanity, title, input.Schedules);
                     if (await stgHelper.IfShortUrlEntityExist(newRow))
                     {
-                        return new ConflictObjectResult(new{ Message = "This Short URL already exist."});
+                        var badResponse = req.CreateResponse(HttpStatusCode.Conflict);
+                        await badResponse.WriteAsJsonAsync(new {Message = "This Short URL already exist."});
+                        return badResponse;
                     }
                 }
                 else
@@ -141,22 +134,24 @@ namespace Cloud5mins.Function
 
                 await stgHelper.SaveShortUrlEntity(newRow);
 
-                var host = string.IsNullOrEmpty(config["customDomain"]) ? req.Host.Host: config["customDomain"].ToString();
+                var host = string.IsNullOrEmpty(_adminApiSettings.customDomain) ? req.Url.Host: _adminApiSettings.customDomain.ToString();
                 result = new ShortResponse(host, newRow.Url, newRow.RowKey, newRow.Title);
 
-                log.LogInformation("Short Url created.");
+                _logger.LogInformation("Short Url created.");
             }
             catch (Exception ex)
             {
-                log.LogError(ex, "An unexpected error was encountered.");
-                return new BadRequestObjectResult(new
-                {
-                    message = ex.Message,
-                    StatusCode =  HttpStatusCode.BadRequest
-                });
+                _logger.LogError(ex, "An unexpected error was encountered.");
+
+                var badResponse = req.CreateResponse(HttpStatusCode.BadRequest);
+                await badResponse.WriteAsJsonAsync(new {Message = ex.Message});
+                return badResponse;
             }
 
-            return new OkObjectResult(result);
+            var response = req.CreateResponse(HttpStatusCode.OK);
+            await response.WriteAsJsonAsync(result);
+
+            return response;
         }
     }
 }

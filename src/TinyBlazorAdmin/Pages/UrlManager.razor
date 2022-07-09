@@ -160,6 +160,11 @@ else
         }
     }
 
+    private async Task UpdateUIList() {
+        @* UrlList = await azClient.GetUrlList();
+        gridData = UrlList.UrlList; *@
+        StateHasChanged();
+    }
     private async Task SaveShortUrl()
     {
         ShowCreatePopup = false;
@@ -169,12 +174,12 @@ else
             await Http.GetFromJsonAsync<ListResponse>("/api/CreateShortUrl") ;
             await UpdateUIList();
         }
-        catch (System.Exception)
+        catch (System.Exception ex)
         {
             Console.WriteLine(ex.ToString());
         }
-        grdUrls.ClearFiltering();
-        grdUrls.FilterByColumn("RowKey", "equal", shortUrlRequest.Vanity);
+        await grdUrls.ClearFiltering();
+        await grdUrls.FilterByColumn("RowKey", "equal", shortUrlRequest.Vanity);
     }
 
     void ClosePopup()
