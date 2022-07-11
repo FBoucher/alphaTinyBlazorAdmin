@@ -57,7 +57,7 @@ namespace Cloud5mins.Function
             ExecutionContext context
         )
         {
-            _logger.LogInformation($"C# HTTP trigger function processed this request: {req}");
+            _logger.LogInformation($"__trace creating shortURL: {req}");
             string userId = string.Empty;
             ShortRequest input;
             var result = new ShortResponse();

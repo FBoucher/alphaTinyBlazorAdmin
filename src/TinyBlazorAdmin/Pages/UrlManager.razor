@@ -121,9 +121,9 @@ else
                                 </div>
                             </div>
 
-                            <div>
+                            <!--div>
                                 <SchedulesComponent schedules="shortUrlRequest.Schedules"></SchedulesComponent>
-                            </div>
+                            </div-->
                         </EditForm>
                 </div>
 
@@ -150,6 +150,10 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        await RefreshGrid();
+    }
+
+    private async Task RefreshGrid(){
         try
         {
             urls = await Http.GetFromJsonAsync<ListResponse>("/api/UrlList") ?? new ListResponse();
@@ -161,8 +165,7 @@ else
     }
 
     private async Task UpdateUIList() {
-        @* UrlList = await azClient.GetUrlList();
-        gridData = UrlList.UrlList; *@
+        await RefreshGrid();
         StateHasChanged();
     }
     private async Task SaveShortUrl()
@@ -171,15 +174,15 @@ else
 
         try
         {
-            await Http.GetFromJsonAsync<ListResponse>("/api/CreateShortUrl") ;
+            await Http.PostAsJsonAsync<ShortUrlRequest>("/api/UrlShortener",shortUrlRequest) ;
             await UpdateUIList();
+            @* await grdUrls.ClearFilteringAsync();
+            await grdUrls.FilterByColumnAsync("RowKey", "equal", shortUrlRequest.Vanity); *@
         }
         catch (System.Exception ex)
         {
             Console.WriteLine(ex.ToString());
         }
-        await grdUrls.ClearFiltering();
-        await grdUrls.FilterByColumn("RowKey", "equal", shortUrlRequest.Vanity);
     }
 
     void ClosePopup()
